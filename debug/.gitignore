@@ -1,0 +1,4 @@
+#
+# Suppress all debug files from tracking
+#
+*.txt

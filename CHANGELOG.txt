@@ -1,0 +1,257 @@
+LOCALLY MODIFIED FILES. NOTE: ALL MODIFIED FILES HAVE THE CORRESPONDING ORIGINAL *.bak FILE.
+
++++++++++++++++++++++
+potential.cpp and potential.h
+
+//M 30/05/2020:  Removed old potentials
+
++++++++++++++++++++++
+Code tree  + Makefile
+
+//M 08/07/2019: Cleanup code tree and use new automagic Makefile
+
+++++++++++
+Makefile
+
+//R 15/05/2018: linking with GSL and BLAS
+//R 15/05/2018: generating and linking new object file externalv.o
+//R 24/04/2018: linking with FFTW3_MPI
+----------
+
++++++++++++++++++++
+externalv.cpp
+include/externalv.h
+
+//R 15/05/2018: ADDED new files for dealing with external potential files.
+    ** By default, load file from "potential.txt"
+    ** format: r2 (in lattice spacing units), Re(V), Im(V)
+-------------------    
+
+++++++++++
+params.txt
+
+//R 20/03/2018: Added line
+    35 LOCAL MODIFICATION Read file
+----------
+
+++++++++++++++++++
+mpisolve.c
+include/mpisolve.h
+
+//R 15/05/2018: Added function
+    dcomp compute_rel_pot(dcomp*** wfnc)
+    ** to compute the relativistic kinetic term using MPI,
+    ** wile keeping all the MPI stuff inside mpisolve.o object file.
+
+//R 15/05/2018: Modified functions
+    void solveInitialize()
+    ** and
+    void solveFinalize()
+    ** to initialize and de-initialize the FFTW3 library
+
+//R 15/05/2018: added functions
+    inline void dcomp_to_fftw(const dcomp &in, fftw_complex *out)
+    inline void fftw_to_dcomp(const fftw_complex &in, dcomp *out)
+    ** to convert between fftw3 and dcomp complex number formats.
+
+//R 15/05/2018: added struct fftw_par to contain variables for the usage of FFTW3 library
+
+//R 20/03/2018: Added global definition:
+    int    RELATIVISTIC=0; /* LOCAL MODIFICATION: USAGE OF RELATIVISTIC KINTETIC TERM*/
+
+------------------
+
++++++++++++++++
+paramreader.cpp
+
+//R 20/03/2018: Added line
+    if (strcmp(key,"RELATIVISTIC")==0) RELATIVISTIC=atoi(value);
+    **in function
+    void setParameter(const char *key, const char *value)
+---------------
+
++++++++++++++++++++
+Potential.cpp:
+include/Potential.h
+
+//R 15/05/2018: Added 2 functions:
+    void initialize_potential();
+    void destroy_potential();
+    ** to deal with the management of external potential files:
+    ** reading external file and using GSL interpolation library.
+
+//R 20/03/2018: Added case 35 in functions:
+    dcomp potential(int sx,int sy, int sz) 
+    dcomp potentialSub(int sx, int sy, int sz)
+--------------
+
++++++++++
+grid.cpp:
+
+//R 15/05/2018: Modification on function
+    void loadPotentialArrays()
+    ** to invoke the new functions
+    void initialize_potential()
+    void destroy_potential()
+    ** in Potential.h
+    
+//R 15/05/2018: Modification on function
+    dcomp wfncEnergy(dcomp*** wfnc)
+    ** to redirect the RELATIVISTIC kinetic term to mpisolve.o function
+    dcomp compute_rel_pot(dcomp*** wfnc)
+    ** that runs over MPI.
+    
+//R 20/03/2018: Modifications on function
+    dcomp wfncEnergy(dcomp*** wfnc)
+    ** If RELATIVISTIC==0, its behaviour should remain untouched. Otherwise, the
+    ** relativistic kinetic term should be returned.
+
+----------------------------------------------------------------------------------------
+Version 2.1 - Oct 17 2013
+----------------------------------------------------------------------------------------
+
+	- misc cleanup and bug fixes
+	- added a bunch of new potential related to arXiv:1309.3003 plus associated
+          parameters
+	- added computation of <x>, <y>, and <z> of the ground, 1st, and 2nd excited 
+          states
+	- fix compilation problem on Ubuntu 12.04 [Tx to S. Biondini for the bug report]
+
+----------------------------------------------------------------------------------------
+Version 2.0.4 - Sept 4 2011
+----------------------------------------------------------------------------------------
+
+	- add extraction of excited state summary info
+
+----------------------------------------------------------------------------------------
+Version 2.0.3 - Sept 1 2011
+----------------------------------------------------------------------------------------
+
+	- Added some slurm script magic for multiresolution runs
+	- Cleaned up output of summary data in preparation for extraction of multiple
+	  excited states
+	- Added output of binding energy data to files for easier postprocessing
+	- Added flag DUMPSNAPS to allow one to toggle the dumping of snapshots to disk
+
+----------------------------------------------------------------------------------------
+Version 2.0.2 - August 28 2011
+----------------------------------------------------------------------------------------
+
+	- Fixed imaginary part subtraction for complex heavy quark potentials
+
+----------------------------------------------------------------------------------------
+Version 2.0.1 - March 8 2011
+----------------------------------------------------------------------------------------
+
+	- Fixed some syntax to make the code compile with newer C compilers
+
+----------------------------------------------------------------------------------------
+Version 2.0 - January 11 2011
+----------------------------------------------------------------------------------------
+
+	- Relaase 2.0; Includes final complex quarkonium potential bug fixes, etc
+
+----------------------------------------------------------------------------------------
+Version 2.0.0b2 - Apr 19 2010
+----------------------------------------------------------------------------------------
+
+	- Added potential for assessing affect of imaginary part of quarkoninum 
+	  potential
+
+----------------------------------------------------------------------------------------
+Version 2.0.0b1 - Feb 17 2010
+----------------------------------------------------------------------------------------
+	
+	- Added support for complex potentials, wavefunctions
+
+----------------------------------------------------------------------------------------
+Version 1.1.0 - Mar 18 2009
+----------------------------------------------------------------------------------------
+
+	- Finished implementing dumping of full 3d wavefunctions at end of run
+	- Implemented ability to read previously dumped wavefunctions from disk as
+          initial condition for a run.  Wavefunction lattice size can be different
+          than current lattice size; code samples appropriately.  Currently the 
+	  number of computational nodes must be the same in order for the read to
+
+	- Fixed some syntax to make the code compile with newer C compilers
+
+----------------------------------------------------------------------------------------
+Version 2.0 - January 11 2011
+----------------------------------------------------------------------------------------
+
+	- Relaase 2.0; Includes final complex quarkonium potential bug fixes, etc
+
+----------------------------------------------------------------------------------------
+Version 2.0.0b2 - Apr 19 2010
+----------------------------------------------------------------------------------------
+
+	- Added potential for assessing affect of imaginary part of quarkoninum 
+	  potential
+
+----------------------------------------------------------------------------------------
+Version 2.0.0b1 - Feb 17 2010
+----------------------------------------------------------------------------------------
+	
+	- Added support for complex potentials, wavefunctions
+
+----------------------------------------------------------------------------------------
+Version 1.1.0 - Mar 18 2009
+----------------------------------------------------------------------------------------
+
+	- Finished implementing dumping of full 3d wavefunctions at end of run
+	- Implemented ability to read previously dumped wavefunctions from disk as
+          initial condition for a run.  Wavefunction lattice size can be different
+          than current lattice size; code samples appropriately.  Currently the 
+	  number of computational nodes must be the same in order for the read to
+	  work properly.
+
+----------------------------------------------------------------------------------------
+Version 1.0.6 - Feb 24 2009
+----------------------------------------------------------------------------------------
+
+	- Added timer to code for benchmarking
+	- Added new 3d harmonic oscillator potential
+	- Cleaned up copyright notices etc
+
+----------------------------------------------------------------------------------------
+Version 1.0.5 - Nov 19 2008
+----------------------------------------------------------------------------------------
+
+	- Added new potential which includes entropy contribution (#14)
+	- Added periodic resymmetrization of wavefunction which corrects for roundoff
+	  error introduction of bad symmetry components
+
+----------------------------------------------------------------------------------------
+Version 1.0.4 - Sept 13 2008
+----------------------------------------------------------------------------------------
+
+	- Added computation of RMS radius r_RMS; outputs r_RMS/a and L/r_RMS for both
+	  ground state and 1st excited state.  (modification by ad.)
+
+
+----------------------------------------------------------------------------------------
+Version 1.0.3 - June 28 2008
+----------------------------------------------------------------------------------------
+
+	- Added automatic convergence test with adjustable tolerance
+
+----------------------------------------------------------------------------------------
+Version 1.0.2 - June 24 2008
+----------------------------------------------------------------------------------------
+
+	- Added ability to read parameters from commandline
+	- Added new small-xi anisotropic potential
+
+----------------------------------------------------------------------------------------
+Version 1.0.1 - May 9 2008
+----------------------------------------------------------------------------------------
+	
+	- Added coloumb initial conditions
+	- Reorganized solveInitialize so that it's run by comp nodes instead of master
+
+----------------------------------------------------------------------------------------
+Version 1.0 - May 8 2008
+----------------------------------------------------------------------------------------
+
+	- Initial version
