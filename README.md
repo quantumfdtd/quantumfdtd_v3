@@ -2,9 +2,9 @@
 ## Parallelized Finite Difference Time Domain (FDTD) Solver
  - Version 3.0, June 26 2020
  - Author(s):  Michael Strickland, Rafael L. Delgado,
-               Sebastian Steinbeißer
+               Sebastian Steinbeißer, Johanes H. Weber
  - Email:  mstrick6@kent.edu, rdelgadol@fi.infn.it,
-           sebastian.steinbeisser@tum.de
+           sebastian.steinbeisser@tum.de, weberjo8@msu.edu
 *************************************************************
 
  DESCRIPTION 
@@ -84,11 +84,12 @@ See detailed text in license directory.
 We ask that if you use this code for work which results in a
 publication that you cite the following papers:
 
-  Rafael L. Delgado, Sebastian Steinbeißer, Michael Strickland,
-    The Relativistic Schrödinger Equation through FFTW3:
-    An Extension of quantumfdtd
-    [to appear on arXiv]
+Rafael L. Delgado, Sebastian Steinbeißer, Michael Strickland, and Johannes H. Weber,  
+"The Relativistic Schrödinger Equation through FFTW3: An Extension of quantumfdtd",  
+To be submitted.  
+[https://inspirehep.net/literature/1804287]
 
-  M. Strickland and D. Yager-Elorriaga, "A Parallel 
-    Algorithm for Solving the 3d Schrodinger Equation",
-    Journal of Computational Physics 229, 6015 (2010).
+M. Strickland, and D. Yager-Elorriaga,  
+"A Parallel Algorithm for Solving the 3d Schrodinger Equation",  
+Journal of Computational Physics 229 (2010), 6015.  
+[https://inspirehep.net/literature/817954]
