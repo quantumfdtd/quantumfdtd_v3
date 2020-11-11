@@ -115,7 +115,7 @@ void outputSummaryData(string label, const double time, const int step) {
       out << NUM << "\t";
       out << A << "\t";
       out << MASS << "\t";
-      out << SIGMA << "\t";
+      out << SIGMA << endl;
       out.close();
 }
 
