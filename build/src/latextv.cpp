@@ -221,7 +221,7 @@ dcomp read_latext_v(int sx, int sy, int sz)
         -0.385/(A*r) + ltv_data.adj_sigma*(A*r); 
   }
   
-  return aVeff;
+  return aVeff/A;
 }
 
 void charge_latext_v(const char *filename)
