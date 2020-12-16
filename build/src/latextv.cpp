@@ -382,7 +382,7 @@ dcomp read_external_cartes_v(int sx, int sy, int sz)
   if (ky<0) ky=-ky;
   if (kz<0) kz=-kz;
 
-  if( kx<Nrenc && ky<Nrenc && kz<Nrenc ){
+  if( kx<l_cartes_v_data.Nmax && ky<l_cartes_v_data.Nmax && kz<l_cartes_v_data.Nmax ){
    n = ltv_data.n[k1][k2][k3];
     if (n!=0){
        Veff = l_cartes_v_data.s_Veff[k1][k2][k3]/((double)n);
