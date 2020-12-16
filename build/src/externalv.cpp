@@ -44,7 +44,7 @@ struct external_v_int_t{
 } ev_int = {NULL, NULL, NULL, NULL, NULL, NULL, NULL};
 
 
-dcomp read_external_v(double raw_r2)
+dcomp read_external_radial_v(double raw_r2)
 {
   double buff_re, buff_im;
 
@@ -54,7 +54,7 @@ dcomp read_external_v(double raw_r2)
   return dcomp(buff_re, buff_im);
 }
 
-void charge_external_v(const char *filename)
+void charge_external_radial_v(const char *filename)
 {
   if(!filename) filename="potential.txt";
   charge_external_file(filename);

@@ -28,4 +28,7 @@ dcomp read_latext_v(int sx, int sy, int sz);
 dcomp read_latext_v_c000(int sx, int sy, int sz);
 void charge_latext_v(const char *filename);
 
+dcomp read_external_cartes_v(int sx, int sy, int sz);
+void charge_external_cartes_v(const char *filename);
+
 #endif /* __latextv_h__ */

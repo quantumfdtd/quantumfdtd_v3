@@ -12,10 +12,10 @@
 #ifndef __externalv_h__
 #define __externalv_h__
 
-dcomp read_external_v(double raw_r2);
-dcomp read_external_v_sub(double raw_r2);
-void charge_external_v(const char *filename);
-void charge_external_v_sub(const char *filename);
+dcomp read_external_radial_v(double raw_r2);
+//dcomp read_external_radial_v_sub(double raw_r2);
+void charge_external_radial_v(const char *filename);
+//void charge_external_radial_v_sub(const char *filename);
 void destroy_external_v_eval();
 
 #endif /* __externalv_h__ */

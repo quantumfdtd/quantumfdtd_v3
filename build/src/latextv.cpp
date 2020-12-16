@@ -350,3 +350,13 @@ void charge_latext_v(const char *filename)
       cout << "Used full_adj with a=" << ltv_data.adjf_a << " b=" << ltv_data.adjf_b << " sigma=" << ltv_data.adjf_sigma << endl;
   }
 }
+
+dcomp read_external_cartes_v(int sx, int sy, int sz)
+{
+	return (0.,0.);
+}
+
+void charge_external_cartes_v(const char *filename)
+{
+}
+
