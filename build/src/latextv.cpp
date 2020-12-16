@@ -43,6 +43,19 @@ struct t_latext_v_data{
   double adjf_a, adjf_b, adjf_sigma;
 } ltv_data = {false};
 
+struct t_cartes_v_data{
+  bool full_adj;
+  int Nmax;
+
+  dcomp ***s_Veff;
+  int ***n;
+
+  dcomp Veff_inf;
+  dcomp adj_sigma;
+
+  dcomp adjf_a, adjf_b, adjf_sigma;
+} l_cartes_v_data = {false};
+
 
 void get_pos_c000(const int&, const int&, const int&, int*, int*, int*);
 void reorder(const int&, const int&, const int&, int*, int*, int*);
@@ -353,7 +366,41 @@ void charge_latext_v(const char *filename)
 
 dcomp read_external_cartes_v(int sx, int sy, int sz)
 {
-	return (0.,0.);
+  int kx, ky, kz, k1, k2, k3, n;
+  dcomp Veff;
+  bool found=false;
+
+  if (origin_center_lattice()){
+    kx = abs((2*sx + 2*NUMX*(nodeID-1) - (NUM+1) )/2);
+    ky = abs((2*sy - (NUM+1) )/2);
+    kz = abs((2*sz - (NUM+1) )/2);
+  }else{
+    get_pos_c000(sx, sy, sz, &kx, &ky, &kz);
+  }
+      
+  if (kx<0) kx=-kx;
+  if (ky<0) ky=-ky;
+  if (kz<0) kz=-kz;
+
+  if( kx<Nrenc && ky<Nrenc && kz<Nrenc ){
+   n = ltv_data.n[k1][k2][k3];
+    if (n!=0){
+       Veff = l_cartes_v_data.s_Veff[k1][k2][k3]/((double)n);
+       found=true;
+    }
+  }
+
+  if (!found){
+    double r = sqrt(kx*kx + ky*ky + kz*kz);
+
+    if (POTFLATR>0 && r>POTFLATR) r = POTFLATR; 
+
+    Veff = l_cartes_v_data.full_adj ?
+        l_cartes_v_data.adjf_a + l_cartes_v_data.adjf_b/r + l_cartes_v_data.adjf_sigma*r :
+        -0.385/(A*r) + l_cartes_v_data.adj_sigma*(A*r); 
+  }
+  
+  return Veff;
 }
 
 void charge_external_cartes_v(const char *filename)
