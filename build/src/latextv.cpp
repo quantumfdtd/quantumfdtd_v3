@@ -484,7 +484,7 @@ void charge_external_cartes_v(const char *filename)
 
       if (POTCRITR*POTCRITR < maxk2 && maxk2>0){
         a_dyn_r2.push_back(maxk2);
-        a_dyn_V.push_back((ReV,ImV));
+        a_dyn_V.push_back(dcomp(ReV,ImV));
       }
       if (maxk2>=maxk2_prev){
 	maxk2_prev=maxk2;
@@ -537,9 +537,9 @@ void charge_external_cartes_v(const char *filename)
      gsl_multifit_linear(a_X, a_y, a_c, a_cov, &a_chisq, fit);
      gsl_multifit_linear_free(fit);
 
-     l_cartes_v_data.adjf_a += (0,gsl_vector_get(a_c, 0));
-     l_cartes_v_data.adjf_b += (0,gsl_vector_get(a_c, 1));
-     l_cartes_v_data.adjf_sigma += (0,gsl_vector_get(a_c, 2));
+     l_cartes_v_data.adjf_a += dcomp(0,gsl_vector_get(a_c, 0));
+     l_cartes_v_data.adjf_b += dcomp(0,gsl_vector_get(a_c, 1));
+     l_cartes_v_data.adjf_sigma += dcomp(0,gsl_vector_get(a_c, 2));
 
      gsl_vector_free(a_y);
      gsl_vector_free(a_c);
