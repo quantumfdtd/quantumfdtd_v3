@@ -175,6 +175,7 @@ void initialize_potential()
 // Destroy potential, important for external potential file
 void destroy_potential()
 {
+    if (POTENTIAL%100 == 90) destroy_external_cartes_v();
     if (POTENTIAL%100 == 91) destroy_external_v_eval();
 }
 

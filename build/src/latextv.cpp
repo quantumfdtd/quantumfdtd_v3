@@ -560,3 +560,15 @@ void charge_external_cartes_v(const char *filename)
   }
 }
 
+void destroy_external_cartes_v(void)
+{
+  int Nmax = l_cartes_v_data.Nmax;
+
+  for (int sx=0;sx<Nmax+1;sx++) for (int sy=0;sy<Nmax+1;sy++) delete l_cartes_v_data.n[sx][sy];
+  for (int sx=0;sx<Nmax+1;sx++) delete l_cartes_v_data.n[sx];
+  delete l_cartes_v_data.n;
+
+  for (int sx=0;sx<Nmax+1;sx++) for (int sy=0;sy<Nmax+1;sy++) delete l_cartes_v_data.s_Veff[sx][sy];
+  for (int sx=0;sx<Nmax+1;sx++) delete l_cartes_v_data.s_Veff[sx];
+  delete l_cartes_v_data.s_Veff;
+}
