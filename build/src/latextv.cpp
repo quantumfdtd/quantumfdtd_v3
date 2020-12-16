@@ -366,7 +366,7 @@ void charge_latext_v(const char *filename)
 
 dcomp read_external_cartes_v(int sx, int sy, int sz)
 {
-  int kx, ky, kz, k1, k2, k3, n;
+  int kx, ky, kz, n;
   dcomp Veff;
   bool found=false;
 
@@ -379,23 +379,27 @@ dcomp read_external_cartes_v(int sx, int sy, int sz)
   }
 
   double r = sqrt(kx*kx + ky*ky + kz*kz);
-  kx+=l_cartes_v_data.Nmax;  
-  ky+=l_cartes_v_data.Nmax;  
-  kz+=l_cartes_v_data.Nmax;  
 
-  if( kx<l_cartes_v_data.Nmax && ky<l_cartes_v_data.Nmax && kz<l_cartes_v_data.Nmax ){
-   n = ltv_data.n[k1][k2][k3];
-    if (n!=0){
-       Veff = l_cartes_v_data.s_Veff[k1][k2][k3]/((double)n);
-       found=true;
-    }
+  if( abs(kx)<l_cartes_v_data.Nmax && abs(ky)<l_cartes_v_data.Nmax && abs(kz)<l_cartes_v_data.Nmax ){
+
+   kx+=l_cartes_v_data.Nmax;  
+   ky+=l_cartes_v_data.Nmax;  
+   kz+=l_cartes_v_data.Nmax;  
+
+   n = l_cartes_v_data.n[kx][ky][kz];
+
+   if (n>0){
+      Veff = l_cartes_v_data.s_Veff[kx][ky][kz]/((double)n);
+      cout << "READING POTENTIAL Veff=" << Veff << endl << "n=" << n << endl << "kx ky kz" << kx << ' ' << ky << ' ' << kz << endl;
+      found=true;
+   }
   }
 
   if (!found){
     if (POTFLATR>0 && r>POTFLATR) r = POTFLATR; 
     Veff = l_cartes_v_data.full_adj ?
         l_cartes_v_data.adjf_a + l_cartes_v_data.adjf_b/r + l_cartes_v_data.adjf_sigma*r :
-        -0.385/(A*r) + l_cartes_v_data.adj_sigma*(A*r); 
+        -0.385/(A*(r>0?r:0.5)) + l_cartes_v_data.adj_sigma*(A*r); 
   }
   
   return Veff;
@@ -444,15 +448,16 @@ void charge_external_cartes_v(const char *filename)
   
   l_cartes_v_data.Nmax = Nmax;
 
+  file.clear();
   file.seekg(0, ios::beg);
 
   l_cartes_v_data.n = new int**[2*Nmax+2];
-  for (int sx=0;sx<Nmax+1;sx++) l_cartes_v_data.n[sx]=new int*[2*l_cartes_v_data.Nmax+2];
-  for (int sx=0;sx<Nmax+1;sx++) for (int sy=0;sy<Nmax+1;sy++) l_cartes_v_data.n[sx][sy] = new int[2*l_cartes_v_data.Nmax+2];
+  for (int sx=0;sx<2*Nmax+2;sx++) l_cartes_v_data.n[sx]=new int*[2*Nmax+2];
+  for (int sx=0;sx<2*Nmax+2;sx++) for (int sy=0;sy<2*Nmax+2;sy++) l_cartes_v_data.n[sx][sy] = new int[2*Nmax+2];
 
   l_cartes_v_data.s_Veff = new dcomp**[2*Nmax+2];
-  for (int sx=0;sx<Nmax+1;sx++) l_cartes_v_data.s_Veff[sx]=new dcomp*[2*Nmax+2];
-  for (int sx=0;sx<Nmax+1;sx++) for (int sy=0;sy<Nmax+1;sy++) l_cartes_v_data.s_Veff[sx][sy] = new dcomp[2*Nmax+2];
+  for (int sx=0;sx<2*Nmax+2;sx++) l_cartes_v_data.s_Veff[sx]=new dcomp*[2*Nmax+2];
+  for (int sx=0;sx<2*Nmax+2;sx++) for (int sy=0;sy<2*Nmax+2;sy++) l_cartes_v_data.s_Veff[sx][sy] = new dcomp[2*Nmax+2];
 
   for (int k1=2*Nmax+1; k1>=0; --k1)
     for (int k2=2*Nmax+1; k2>=0; --k2)
@@ -465,19 +470,19 @@ void charge_external_cartes_v(const char *filename)
     file.getline(buffer, maxline, '\n');
     if (sscanf(buffer, "%d %d %d %le %le",
 	       &k1, &k2, &k3, &ReV, &ImV) != EOF){
-
+      
       maxk2 = k1*k1+k2*k2+k3*k3;
+
+      //if (nodeID==1) printf("k = %d ; %d ; %d : Veff = (%le,%le), n(ki) = %d \n", k1,k2,k3,ReV,ImV,l_cartes_v_data.n[k1][k2][k3]);
 
       k1+=Nmax;
       k2+=Nmax;
       k3+=Nmax;
 
-      l_cartes_v_data.s_Veff[k1][k2][k3] += (ReV,ImV);
+      l_cartes_v_data.s_Veff[k1][k2][k3] += dcomp(ReV,ImV);
       ++l_cartes_v_data.n[k1][k2][k3];
 
-      //if (nodeID==1) printf("k = %d ; %d ; %d : Veff = %le n(ki) = %d \n", k1,k2,k3,aVeff,l_cartes_v_data.n[k1][k2][k3]);
-
-      if (POTCRITR*POTCRITR < maxk2){
+      if (POTCRITR*POTCRITR < maxk2 && maxk2>0){
         a_dyn_r2.push_back(maxk2);
         a_dyn_V.push_back((ReV,ImV));
       }
@@ -509,7 +514,7 @@ void charge_external_cartes_v(const char *filename)
        //if (nodeID==1) cout << "DEBUG multifit: r=" << r << "\t V=" << V << endl;
        gsl_vector_set(a_y, i, V);
        gsl_matrix_set(a_X, i, 0, 1.);
-       gsl_matrix_set(a_X, i, 1, 1./r);
+       gsl_matrix_set(a_X, i, 1, r>0 ? 1./r : 0.5*0.5*0.5);
        gsl_matrix_set(a_X, i, 2, r);
      }
 
@@ -564,11 +569,11 @@ void destroy_external_cartes_v(void)
 {
   int Nmax = l_cartes_v_data.Nmax;
 
-  for (int sx=0;sx<Nmax+1;sx++) for (int sy=0;sy<Nmax+1;sy++) delete l_cartes_v_data.n[sx][sy];
-  for (int sx=0;sx<Nmax+1;sx++) delete l_cartes_v_data.n[sx];
+  for (int sx=0;sx<2*Nmax+2;sx++) for (int sy=0;sy<2*Nmax+2;sy++) delete l_cartes_v_data.n[sx][sy];
+  for (int sx=0;sx<2*Nmax+2;sx++) delete l_cartes_v_data.n[sx];
   delete l_cartes_v_data.n;
 
-  for (int sx=0;sx<Nmax+1;sx++) for (int sy=0;sy<Nmax+1;sy++) delete l_cartes_v_data.s_Veff[sx][sy];
-  for (int sx=0;sx<Nmax+1;sx++) delete l_cartes_v_data.s_Veff[sx];
+  for (int sx=0;sx<2*Nmax+2;sx++) for (int sy=0;sy<2*Nmax+2;sy++) delete l_cartes_v_data.s_Veff[sx][sy];
+  for (int sx=0;sx<2*Nmax+2;sx++) delete l_cartes_v_data.s_Veff[sx];
   delete l_cartes_v_data.s_Veff;
 }
