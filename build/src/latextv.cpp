@@ -43,6 +43,19 @@ struct t_latext_v_data{
   double adjf_a, adjf_b, adjf_sigma;
 } ltv_data = {false};
 
+struct t_cartes_v_data{
+  bool full_adj;
+  int Nmax;
+
+  dcomp ***s_Veff;
+  int ***n;
+
+  dcomp Veff_inf;
+  dcomp adj_sigma;
+
+  dcomp adjf_a, adjf_b, adjf_sigma;
+} l_cartes_v_data = {false};
+
 
 void get_pos_c000(const int&, const int&, const int&, int*, int*, int*);
 void reorder(const int&, const int&, const int&, int*, int*, int*);
@@ -349,4 +362,218 @@ void charge_latext_v(const char *filename)
     if (ltv_data.full_adj)
       cout << "Used full_adj with a=" << ltv_data.adjf_a << " b=" << ltv_data.adjf_b << " sigma=" << ltv_data.adjf_sigma << endl;
   }
+}
+
+dcomp read_external_cartes_v(int sx, int sy, int sz)
+{
+  int kx, ky, kz, n;
+  dcomp Veff;
+  bool found=false;
+
+  if (origin_center_lattice()){
+    kx = abs((2*sx + 2*NUMX*(nodeID-1) - (NUM+1) )/2);
+    ky = abs((2*sy - (NUM+1) )/2);
+    kz = abs((2*sz - (NUM+1) )/2);
+  }else{
+    get_pos_c000(sx, sy, sz, &kx, &ky, &kz);
+  }
+
+  double r = sqrt(kx*kx + ky*ky + kz*kz);
+
+  if( abs(kx)<l_cartes_v_data.Nmax && abs(ky)<l_cartes_v_data.Nmax && abs(kz)<l_cartes_v_data.Nmax ){
+
+   kx+=l_cartes_v_data.Nmax;  
+   ky+=l_cartes_v_data.Nmax;  
+   kz+=l_cartes_v_data.Nmax;  
+
+   n = l_cartes_v_data.n[kx][ky][kz];
+
+   if (n>0){
+      Veff = l_cartes_v_data.s_Veff[kx][ky][kz]/((double)n);
+      cout << "READING POTENTIAL Veff=" << Veff << endl << "n=" << n << endl << "kx ky kz" << kx << ' ' << ky << ' ' << kz << endl;
+      found=true;
+   }
+  }
+
+  if (!found){
+    if (POTFLATR>0 && r>POTFLATR) r = POTFLATR; 
+    Veff = l_cartes_v_data.full_adj ?
+        l_cartes_v_data.adjf_a + l_cartes_v_data.adjf_b/r + l_cartes_v_data.adjf_sigma*r :
+        -0.385/(A*(r>0?r:0.5)) + l_cartes_v_data.adj_sigma*(A*r); 
+  }
+  
+  return Veff;
+}
+
+void charge_external_cartes_v(const char *filename)
+{
+  int read_lines=0;
+
+  std::vector<int> a_dyn_r2;
+  std::vector<dcomp> a_dyn_V;
+
+  if(!filename) filename = "effpot.dat";
+  
+  ifstream file(filename);
+  if(!file){
+    cerr << "EXTERNAL POTENTIAL DOES NOT EXIST!!!" << endl;
+    exit(-1);
+  }
+
+  if (nodeID==1) cout << "Loading potential lattice-format file " << filename << endl;
+
+  char buffer[maxline];
+  double buff_r2, buff_re, buff_im;
+  int maxk2=0, maxk2_prev=0;
+
+  int k1,k2,k3;
+  double ReV, ImV;
+
+  l_cartes_v_data.Veff_inf = 0.;
+  l_cartes_v_data.full_adj = false;
+  l_cartes_v_data.Nmax = 0;
+  int Nmax = l_cartes_v_data.Nmax;
+
+  while (!file.eof()){
+    file.getline(buffer, maxline, '\n');
+    if (sscanf(buffer, "%d %d %d %le %le",
+	       &k1, &k2, &k3, &ReV, &ImV) != EOF){
+
+       ++read_lines;
+       if (abs(k1)>Nmax) Nmax = abs(k1);
+       if (abs(k2)>Nmax) Nmax = abs(k2);
+       if (abs(k3)>Nmax) Nmax = abs(k3);
+    }
+  }
+  
+  l_cartes_v_data.Nmax = Nmax;
+
+  file.clear();
+  file.seekg(0, ios::beg);
+
+  l_cartes_v_data.n = new int**[2*Nmax+2];
+  for (int sx=0;sx<2*Nmax+2;sx++) l_cartes_v_data.n[sx]=new int*[2*Nmax+2];
+  for (int sx=0;sx<2*Nmax+2;sx++) for (int sy=0;sy<2*Nmax+2;sy++) l_cartes_v_data.n[sx][sy] = new int[2*Nmax+2];
+
+  l_cartes_v_data.s_Veff = new dcomp**[2*Nmax+2];
+  for (int sx=0;sx<2*Nmax+2;sx++) l_cartes_v_data.s_Veff[sx]=new dcomp*[2*Nmax+2];
+  for (int sx=0;sx<2*Nmax+2;sx++) for (int sy=0;sy<2*Nmax+2;sy++) l_cartes_v_data.s_Veff[sx][sy] = new dcomp[2*Nmax+2];
+
+  for (int k1=2*Nmax+1; k1>=0; --k1)
+    for (int k2=2*Nmax+1; k2>=0; --k2)
+      for (int k3=2*Nmax+1; k3>=0; --k3){
+	l_cartes_v_data.s_Veff[k1][k2][k3] = 0.;
+	l_cartes_v_data.n[k1][k2][k3] = 0;
+      }
+
+  while(!file.eof()){
+    file.getline(buffer, maxline, '\n');
+    if (sscanf(buffer, "%d %d %d %le %le",
+	       &k1, &k2, &k3, &ReV, &ImV) != EOF){
+      
+      maxk2 = k1*k1+k2*k2+k3*k3;
+
+      //if (nodeID==1) printf("k = %d ; %d ; %d : Veff = (%le,%le), n(ki) = %d \n", k1,k2,k3,ReV,ImV,l_cartes_v_data.n[k1][k2][k3]);
+
+      k1+=Nmax;
+      k2+=Nmax;
+      k3+=Nmax;
+
+      l_cartes_v_data.s_Veff[k1][k2][k3] += dcomp(ReV,ImV);
+      ++l_cartes_v_data.n[k1][k2][k3];
+
+      if (POTCRITR*POTCRITR < maxk2 && maxk2>0){
+        a_dyn_r2.push_back(maxk2);
+        a_dyn_V.push_back(dcomp(ReV,ImV));
+      }
+      if (maxk2>=maxk2_prev){
+	maxk2_prev=maxk2;
+	l_cartes_v_data.Veff_inf = l_cartes_v_data.s_Veff[k1][k2][k3]/((double)l_cartes_v_data.n[k1][k2][k3]);
+      }
+    }
+  }
+
+  int n = a_dyn_r2.size();
+  {
+    gsl_matrix *a_X, *a_cov;
+    gsl_vector *a_y, *a_c;
+    double a_chisq;
+    gsl_multifit_linear_workspace *fit = NULL;
+
+    if (n>4){
+     //if (nodeID==1) cout << "DEBUG MULTIFIT npoints=" << n << endl;
+     a_y = gsl_vector_alloc(n);
+     a_y = gsl_vector_alloc(n);
+     a_c = gsl_vector_alloc(3);
+     a_X = gsl_matrix_alloc(n,3);
+     a_cov = gsl_matrix_alloc(3,3);
+
+     for (int i=0; i<n; i++){
+       double r = sqrt(a_dyn_r2[i]);
+       double V = a_dyn_V[i].real();
+       //if (nodeID==1) cout << "DEBUG multifit: r=" << r << "\t V=" << V << endl;
+       gsl_vector_set(a_y, i, V);
+       gsl_matrix_set(a_X, i, 0, 1.);
+       gsl_matrix_set(a_X, i, 1, r>0 ? 1./r : 0.5*0.5*0.5);
+       gsl_matrix_set(a_X, i, 2, r);
+     }
+
+     fit = gsl_multifit_linear_alloc(n,3);
+     gsl_multifit_linear(a_X, a_y, a_c, a_cov, &a_chisq, fit);
+     gsl_multifit_linear_free(fit);
+
+     l_cartes_v_data.adjf_a = gsl_vector_get(a_c, 0);
+     l_cartes_v_data.adjf_b = gsl_vector_get(a_c, 1);
+     l_cartes_v_data.adjf_sigma = gsl_vector_get(a_c, 2);
+
+     for (int i=0; i<n; i++){
+       double r = sqrt(a_dyn_r2[i]);
+       double V = a_dyn_V[i].imag();
+       //if (nodeID==1) cout << "DEBUG multifit: r=" << r << "\t V=" << V << endl;
+       gsl_vector_set(a_y, i, V);
+     }
+
+     fit = gsl_multifit_linear_alloc(n,3);
+     gsl_multifit_linear(a_X, a_y, a_c, a_cov, &a_chisq, fit);
+     gsl_multifit_linear_free(fit);
+
+     l_cartes_v_data.adjf_a += dcomp(0,gsl_vector_get(a_c, 0));
+     l_cartes_v_data.adjf_b += dcomp(0,gsl_vector_get(a_c, 1));
+     l_cartes_v_data.adjf_sigma += dcomp(0,gsl_vector_get(a_c, 2));
+
+     gsl_vector_free(a_y);
+     gsl_vector_free(a_c);
+     gsl_matrix_free(a_X);
+     gsl_matrix_free(a_cov);
+
+     l_cartes_v_data.full_adj=true;
+    }
+  }
+  {
+    double r = A*sqrt(maxk2_prev);
+    l_cartes_v_data.adj_sigma = (l_cartes_v_data.Veff_inf+0.385/r)/r;
+  }
+  if (nodeID==1){
+    cout << "File read (node 1)" << endl;
+    cout << "Read lines: " << read_lines << endl;
+    cout << "maxk2: " << maxk2 << "    Veff_inf: " << l_cartes_v_data.Veff_inf << endl;
+    cout << "POTCRITR: " << POTCRITR << "  N CONSIDERED POINTS: " << n << endl;
+    if (l_cartes_v_data.full_adj){
+      cout << "Used full_adj with a=" << l_cartes_v_data.adjf_a << " b=" << l_cartes_v_data.adjf_b << " sigma=" << l_cartes_v_data.adjf_sigma << endl;
+      cout << "Used full_adj with a=" << l_cartes_v_data.adjf_a << " b=" << l_cartes_v_data.adjf_b << " sigma=" << l_cartes_v_data.adjf_sigma << endl;
+    }
+  }
+}
+
+void destroy_external_cartes_v(void)
+{
+  int Nmax = l_cartes_v_data.Nmax;
+
+  for (int sx=0;sx<2*Nmax+2;sx++) for (int sy=0;sy<2*Nmax+2;sy++) delete l_cartes_v_data.n[sx][sy];
+  for (int sx=0;sx<2*Nmax+2;sx++) delete l_cartes_v_data.n[sx];
+  delete l_cartes_v_data.n;
+
+  for (int sx=0;sx<2*Nmax+2;sx++) for (int sy=0;sy<2*Nmax+2;sy++) delete l_cartes_v_data.s_Veff[sx][sy];
+  for (int sx=0;sx<2*Nmax+2;sx++) delete l_cartes_v_data.s_Veff[sx];
+  delete l_cartes_v_data.s_Veff;
 }
