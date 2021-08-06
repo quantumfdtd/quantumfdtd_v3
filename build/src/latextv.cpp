@@ -366,31 +366,41 @@ void load_latext_v(const char *filename)
 
 dcomp read_external_cartes_v(int sx, int sy, int sz)
 {
-  int kx, ky, kz, n;
+  int kx, ky, kz;
+  int ikx, iky, ikz, n;
+  double dx, dy, dz, raw_r2, Ar, r, maxk2;
+
+  int Nmax = l_cartes_v_data.Nmax;
+
   dcomp Veff;
   bool found=false;
 
-  if (origin_center_lattice()){
-    kx = abs((2*sx + 2*NUMX*(nodeID-1) - (NUM+1) )/2);
-    ky = abs((2*sy - (NUM+1) )/2);
-    kz = abs((2*sz - (NUM+1) )/2);
+  get_pos(sx, sy, sz, &raw_r2, &Ar, &dx, &dy, &dz);
+  r = sqrt(raw_r2);
+
+  if(origin_center_lattice()){
+          kx = (int) (dx - 0.5);
+          ky = (int) (dy - 0.5);
+          kz = (int) (dz - 0.5);
   }else{
-    get_pos_c000(sx, sy, sz, &kx, &ky, &kz);
+          kx = (int) (dx);
+          ky = (int) (dy);
+          kz = (int) (dz);
   }
 
-  double r = sqrt(kx*kx + ky*ky + kz*kz);
+  ikx = kx + Nmax;
+  iky = ky + Nmax;
+  ikz = kz + Nmax;
+
+  maxk2 = dx*dx + dy*dy + dz*dz; 
 
   if( abs(kx)<l_cartes_v_data.Nmax && abs(ky)<l_cartes_v_data.Nmax && abs(kz)<l_cartes_v_data.Nmax ){
 
-   kx+=l_cartes_v_data.Nmax;  
-   ky+=l_cartes_v_data.Nmax;  
-   kz+=l_cartes_v_data.Nmax;  
-
-   n = l_cartes_v_data.n[kx][ky][kz];
+   n = l_cartes_v_data.n[ikx][iky][ikz];
 
    if (n>0){
-      Veff = l_cartes_v_data.s_Veff[kx][ky][kz]/((double)n);
-      cout << "READING POTENTIAL Veff=" << Veff << endl << "n=" << n << endl << "kx ky kz" << kx << ' ' << ky << ' ' << kz << endl;
+      Veff = l_cartes_v_data.s_Veff[ikx][iky][ikz]/((double)n);
+      //cout << "READING POTENTIAL Veff=" << Veff << endl << "n=" << n << endl << "kx ky kz" << ikx << ' ' << iky << ' ' << ikz << endl;
       found=true;
    }
   }
@@ -427,6 +437,9 @@ void load_external_cartes_v(const char *filename)
   int maxk2=0, maxk2_prev=0;
 
   int k1,k2,k3;
+  int ik1,ik2,ik3;
+  double dk1,dk2,dk3;
+
   double ReV, ImV;
 
   l_cartes_v_data.Veff_inf = 0.;
@@ -436,6 +449,17 @@ void load_external_cartes_v(const char *filename)
 
   while (!file.eof()){
     file.getline(buffer, maxline, '\n');
+    /* FORMAT: 
+     * If !center of lattice: -N < ki < N; di = A*ki
+     * 
+     * If center on lattice: -N < ki < N; di = A*(ki + 1/2)
+     *
+     * FORMAT OF COORDINATE ON TEMPORARY FILE:
+     *
+     * iki = ki + Nmax
+     *
+     */
+
     if (sscanf(buffer, "%d %d %d %le %le",
 	       &k1, &k2, &k3, &ReV, &ImV) != EOF){
 
@@ -471,16 +495,27 @@ void load_external_cartes_v(const char *filename)
     if (sscanf(buffer, "%d %d %d %le %le",
 	       &k1, &k2, &k3, &ReV, &ImV) != EOF){
       
-      maxk2 = k1*k1+k2*k2+k3*k3;
 
       //if (nodeID==1) printf("k = %d ; %d ; %d : Veff = (%le,%le), n(ki) = %d \n", k1,k2,k3,ReV,ImV,l_cartes_v_data.n[k1][k2][k3]);
 
-      k1+=Nmax;
-      k2+=Nmax;
-      k3+=Nmax;
+      ik1 = k1 + Nmax;
+      ik2 = k2 + Nmax;
+      ik3 = k3 + Nmax;
 
-      l_cartes_v_data.s_Veff[k1][k2][k3] += dcomp(ReV,ImV);
-      ++l_cartes_v_data.n[k1][k2][k3];
+      dk1 = k1;
+      dk2 = k2;
+      dk3 = k3;
+
+      if(origin_center_lattice()){
+	      dk1 += 0.5;
+	      dk2 += 0.5;
+	      dk3 += 0.5;
+      }
+
+      maxk2 = dk1*dk1 + dk2*dk2 + dk3*dk3; 
+
+      l_cartes_v_data.s_Veff[ik1][ik2][ik3] += dcomp(ReV,ImV);
+      ++l_cartes_v_data.n[ik1][ik2][ik3];
 
       if (POTCRITR*POTCRITR < maxk2 && maxk2>0){
         a_dyn_r2.push_back(maxk2);
@@ -488,7 +523,7 @@ void load_external_cartes_v(const char *filename)
       }
       if (maxk2>=maxk2_prev){
 	maxk2_prev=maxk2;
-	l_cartes_v_data.Veff_inf = l_cartes_v_data.s_Veff[k1][k2][k3]/((double)l_cartes_v_data.n[k1][k2][k3]);
+	l_cartes_v_data.Veff_inf = l_cartes_v_data.s_Veff[ik1][ik2][ik3]/((double)l_cartes_v_data.n[ik1][ik2][ik3]);
       }
     }
   }
