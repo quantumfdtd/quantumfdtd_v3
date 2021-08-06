@@ -159,13 +159,13 @@ void initialize_potential()
 {
     switch (POTENTIAL%100){
 	case 90:
-		charge_external_cartes_v(EXTPOT);
+		load_external_cartes_v(EXTPOT);
 		break;
 	case 91:
-		charge_external_radial_v(EXTPOT);
+		load_external_radial_v(EXTPOT);
 		break;
 	case 92:
-		charge_latext_v(EXTPOT);
+		load_latext_v(EXTPOT);
 		break;
 	default:
 		break;

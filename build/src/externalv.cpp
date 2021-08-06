@@ -29,7 +29,7 @@ using namespace std;
 #include "mpisolve.h"
 #include "externalv.h"
 
-void charge_external_file(const char *filename);
+void load_external_file(const char *filename);
 
 // This holds the external potential v vs. r2
 
@@ -54,13 +54,13 @@ dcomp read_external_radial_v(double raw_r2)
   return dcomp(buff_re, buff_im);
 }
 
-void charge_external_radial_v(const char *filename)
+void load_external_radial_v(const char *filename)
 {
   if(!filename) filename="potential.txt";
-  charge_external_file(filename);
+  load_external_file(filename);
 }
 
-void charge_external_file(const char *filename)
+void load_external_file(const char *filename)
 {
   ifstream file(filename);
 

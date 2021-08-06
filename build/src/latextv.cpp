@@ -237,7 +237,7 @@ dcomp read_latext_v(int sx, int sy, int sz)
   return aVeff/A;
 }
 
-void charge_latext_v(const char *filename)
+void load_latext_v(const char *filename)
 {
   int read_lines=0, discarded_lines=0;
 
@@ -405,7 +405,7 @@ dcomp read_external_cartes_v(int sx, int sy, int sz)
   return Veff;
 }
 
-void charge_external_cartes_v(const char *filename)
+void load_external_cartes_v(const char *filename)
 {
   int read_lines=0;
 
