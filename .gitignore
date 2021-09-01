@@ -38,7 +38,9 @@ mpisolve
 
 # Output on /data/
 /data/*
-!/data/EMPTY
+!/data/snapshot
+/data/snapshot/*
+!data/snapshot/.gitkeep
 
 # python cache
 scripts/__pycache__/
