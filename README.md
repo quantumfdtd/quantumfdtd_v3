@@ -1,14 +1,15 @@
 *************************************************************
 ## Parallelized Finite Difference Time Domain (FDTD) Solver
- - Version 3.0, June 26 2020
+ - Version 3.0, October 04, 2021
  - Author(s):  Michael Strickland, Rafael L. Delgado,
                Sebastian Steinbeißer, Johanes H. Weber
  - Email:  mstrick6@kent.edu, rdelgadol@fi.infn.it,
-           sebastian.steinbeisser@tum.de, weberjo8@msu.edu
+           sebastian.steinbeisser@tum.de,
+           dr.rer.nat.weber@gmail.com
 *************************************************************
 
- DESCRIPTION 
------------------------------------------------------------- 
+ DESCRIPTION
+-------------------------------------------------------------
 
 This code can use several techniques (finite differences and
 Fast Fourier Transform) to solve the Schrödinger Equation in
@@ -23,33 +24,23 @@ can be used by means of the Fast Fourier Transform (FFT),
 with strictly periodic boundary conditions.
 
 REQUIREMENTS
-------------------------------------------------------------
+-------------------------------------------------------------
 
-The MPI (Message Passing Interface) API must be installed 
-on your system. Currently tested against MPICH and OpenMPI. 
-Can run on a single computational node or as many as you 
-like. 
+The MPI (Message Passing Interface) API must be installed
+on your system. Currently tested against MPICH and OpenMPI.
+Can run on a single computational node or as many as you
+like.
 
 The FFTW3-MPI and GSL (GNU Scientific Library) are also
 required to be installed.
 
  COMPILING
-------------------------------------------------------------
+-------------------------------------------------------------
 
 To compile, simply type `make` from the command line.
 
  USAGE
-------------------------------------------------------------
-
-All parameters are specified in the params.txt file. They
-can also be set via the commandline using, e.g.,
-
-```bash
-mpirun -np 16 mpisolve -PARAMNAME [value]
-```
-
-Parameters set via the commandline override those set in
-the params.txt file.
+-------------------------------------------------------------
 
 To run:
 
@@ -57,29 +48,40 @@ To run:
 mpirun -np <Number of Worker Nodes> mpisolve
 ```
 
+All parameters are specified in the params.txt file. They
+can also be set via the commandline using, e.g.,
+
+```bash
+mpirun -np <Number of Worker Nodes> mpisolve -PARAMNAME [value]
+```
+
+Parameters set via the commandline override those set in
+the `params.txt` file.
+
  DEBUGGING
-------------------------------------------------------------
+-------------------------------------------------------------
 
 ```bash
 mpirun N -x DISPLAY run_gdb.csh mpisolve
 ```
 
  CONTRIBUTORS
------------------------------------------------------------
+-------------------------------------------------------------
 Michael Strickland,
 Adrian Dumitru,
 Yun Guo,
-Rafael L. Delgado, and
-Sebastian Steinbeißer
+Rafael L. Delgado,
+Sebastian Steinbeißer, and
+Johannes H. Weber
 
  LICENSE
-------------------------------------------------------------
+-------------------------------------------------------------
 
 GNU General Public License (GPLv3).
-See detailed text in license directory. 
+See detailed text in license directory.
 
  ATTRIBUTION
-------------------------------------------------------------
+-------------------------------------------------------------
 
 We ask that if you use this code for work which results in a
 publication that you cite the following papers:
