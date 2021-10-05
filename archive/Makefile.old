@@ -15,19 +15,19 @@ all: $(TARGET)
 mpisolve: $(OBJ)
 	$(CC) $(MPIFLAGS) $(OBJ) -o mpisolve $(LDFLAGS)
 
-run:	
+run:
 	mpirun -np 3 mpisolve
 
-run1:   
+run1:
 	mpirun -np 9 mpisolve
 
-run2:   
+run2:
 	mpirun -np 17 mpisolve
 
-run4:   
+run4:
 	mpirun -np 33 mpisolve
 
-run8:   
+run8:
 	mpirun -np 65 mpisolve
 
 cleandata:

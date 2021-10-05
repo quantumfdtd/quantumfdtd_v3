@@ -2,7 +2,7 @@
 
    externalv.cpp
 
-   Copyright (c) Rafael L. Delgado 
+   Copyright (c) Rafael L. Delgado
 
    GNU General Public License (GPLv3)
    See detailed text in license directory
@@ -29,20 +29,20 @@ using namespace std;
 #include "mpisolve.h"
 #include "externalv.h"
 
-void charge_external_file(const char *filename);
+void load_external_file(const char *filename);
 
 // This holds the external potential v vs. r2
 
-struct external_v_int_t{
+struct external_v_int_t
+{
   gsl_interp_accel *acc_re, *acc_im;
   gsl_spline *spline_re, *spline_im;
-  
+
   double *vec_r2;
   double *vec_re, *vec_im;
 
   int length;
 } ev_int = {NULL, NULL, NULL, NULL, NULL, NULL, NULL};
-
 
 dcomp read_external_radial_v(double raw_r2)
 {
@@ -54,22 +54,23 @@ dcomp read_external_radial_v(double raw_r2)
   return dcomp(buff_re, buff_im);
 }
 
-void charge_external_radial_v(const char *filename)
+void load_external_radial_v(const char *filename)
 {
-  if(!filename) filename="potential.txt";
-  charge_external_file(filename);
+  if (!filename)
+    filename = "potential.txt";
+  load_external_file(filename);
 }
 
-void charge_external_file(const char *filename)
+void load_external_file(const char *filename)
 {
   ifstream file(filename);
 
   cerr << "CHECKING FILE..." << endl;
-  if(!file){
+  if (!file)
+  {
     cerr << "EXTERNAL POTENTIAL DOES NOT EXIST!!!" << endl;
     exit(-1);
   }
-
 
   int maxline = 128; // maximum line length used in the buffer for reading
   char buffer[maxline];
@@ -79,9 +80,11 @@ void charge_external_file(const char *filename)
 
   ev_int.length = 0;
 
-  while(!file.eof()){
+  while (!file.eof())
+  {
     file.getline(buffer, maxline, '\n');
-    if (sscanf(buffer, "%*e %*e %*e") != EOF){
+    if (sscanf(buffer, "%*e %*e %*e") != EOF)
+    {
       ev_int.length++;
     }
   }
@@ -90,20 +93,23 @@ void charge_external_file(const char *filename)
 
   ev_int.vec_r2 = new double[ev_int.length];
   ev_int.vec_re = new double[ev_int.length];
-  ev_int.vec_im = new double[ev_int.length]; 
+  ev_int.vec_im = new double[ev_int.length];
 
   ev_int.acc_re = gsl_interp_accel_alloc();
   ev_int.acc_im = gsl_interp_accel_alloc();
-  
+
   ev_int.spline_re = gsl_spline_alloc(gsl_interp_cspline, ev_int.length);
   ev_int.spline_im = gsl_spline_alloc(gsl_interp_cspline, ev_int.length);
-  
-  while(!file.eof()){
+
+  while (!file.eof())
+  {
     file.getline(buffer, maxline, '\n');
-    if (sscanf(buffer, "%le %le %le", &buff_r2, &buff_re, &buff_im) != EOF){
-      if (counter >= ev_int.length){
-	cerr << "ERROR: UNCORRECTLY PREDICTED EXTERNAL POTENTIAL FILE LENGTH!!!" << endl;
-	exit(1);
+    if (sscanf(buffer, "%le %le %le", &buff_r2, &buff_re, &buff_im) != EOF)
+    {
+      if (counter >= ev_int.length)
+      {
+        cerr << "ERROR: UNCORRECTLY PREDICTED EXTERNAL POTENTIAL FILE LENGTH!!!" << endl;
+        exit(1);
       }
       ev_int.vec_r2[counter] = buff_r2;
       ev_int.vec_re[counter] = buff_re;
@@ -130,10 +136,10 @@ void destroy_external_v_eval()
   delete ev_int.vec_r2;
   delete ev_int.vec_re;
   delete ev_int.vec_im;
-  
+
   ev_int.spline_re = NULL;
   ev_int.spline_im = NULL;
-  
+
   ev_int.acc_re = NULL;
   ev_int.acc_im = NULL;
 

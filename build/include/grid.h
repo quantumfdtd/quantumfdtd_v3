@@ -37,27 +37,27 @@ extern dcomp ***v;
 extern dcomp ***t_kin;
 
 // these hold the alpha and beta arrays which are used during updates
-extern dcomp ***a,***b;
+extern dcomp ***a, ***b;
 
 // number of snapshots to capture in memory
 extern int nsnaps;
 
 // return energy of the passed wavefnc
-dcomp wfncEnergy(dcomp*** wfnc);
+dcomp wfncEnergy(dcomp ***wfnc);
 
 // return norm squared of the passed wavefnc
-dcomp wfncNorm2(dcomp*** wfnc);
+dcomp wfncNorm2(dcomp ***wfnc);
 
 // return expectation value of vInfinity
-dcomp vInfinityExpectationValue(dcomp*** wfnc);
+dcomp vInfinityExpectationValue(dcomp ***wfnc);
 
-// return expectation value of r^2   
-dcomp r2ExpectationValue(dcomp*** wfnc);
+// return expectation value of r^2
+dcomp r2ExpectationValue(dcomp ***wfnc);
 
 // return expectation value of x, y, and z
-dcomp xExpectationValue(dcomp*** wfnc);
-dcomp yExpectationValue(dcomp*** wfnc);
-dcomp zExpectationValue(dcomp*** wfnc);
+dcomp xExpectationValue(dcomp ***wfnc);
+dcomp yExpectationValue(dcomp ***wfnc);
+dcomp zExpectationValue(dcomp ***wfnc);
 
 // return energy of the current wavefnc
 dcomp computeEnergy();
@@ -68,7 +68,7 @@ void updateBoundaries(double eps);
 void updateInterior(double eps);
 void copyDown();
 void loadPotentialArrays();
-void normalizeWavefunction(dcomp*** wfnc);
-void recordSnapshot(dcomp*** wfnc, int step);
+void normalizeWavefunction(dcomp ***wfnc);
+void recordSnapshot(dcomp ***wfnc, int step);
 
 #endif /* __grid_h__ */

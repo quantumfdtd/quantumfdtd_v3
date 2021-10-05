@@ -1,5 +1,15 @@
 LOCALLY MODIFIED FILES. NOTE: ALL MODIFIED FILES HAVE THE CORRESPONDING ORIGINAL *.bak FILE.
 
+++++++++++++++
+externalv.h latextv.h externalv.cpp latextv.cpp potential.cpp params.txt quantumfdtd.py
+
+//S for R 04/10/2021: Properly name functions that load external potentials
+                      Create folder data/snapshot so that mpisolve can be run out of the box. Without that folder it would crash when trying to write snapshots.
+                      Bugfix for loading external potentials. This fixes discrepancies between the described behavior of the code and the implementation.
+                      Introduce a correction for being able to convert the POTENTIAL parameter to an integer for Python interfacing.
+                      Change constraint statement about EPS.
+--------------
+
 +++++++++++++++++++++
 potential.cpp and potential.h
 
@@ -25,7 +35,7 @@ include/externalv.h
 //R 15/05/2018: ADDED new files for dealing with external potential files.
     ** By default, load file from "potential.txt"
     ** format: r2 (in lattice spacing units), Re(V), Im(V)
--------------------    
+-------------------
 
 ++++++++++
 params.txt
@@ -81,7 +91,7 @@ include/Potential.h
     ** reading external file and using GSL interpolation library.
 
 //R 20/03/2018: Added case 35 in functions:
-    dcomp potential(int sx,int sy, int sz) 
+    dcomp potential(int sx,int sy, int sz)
     dcomp potentialSub(int sx, int sy, int sz)
 --------------
 
@@ -94,13 +104,13 @@ grid.cpp:
     void initialize_potential()
     void destroy_potential()
     ** in Potential.h
-    
+
 //R 15/05/2018: Modification on function
     dcomp wfncEnergy(dcomp*** wfnc)
     ** to redirect the RELATIVISTIC kinetic term to mpisolve.o function
     dcomp compute_rel_pot(dcomp*** wfnc)
     ** that runs over MPI.
-    
+
 //R 20/03/2018: Modifications on function
     dcomp wfncEnergy(dcomp*** wfnc)
     ** If RELATIVISTIC==0, its behaviour should remain untouched. Otherwise, the
@@ -113,7 +123,7 @@ Version 2.1 - Oct 17 2013
 	- misc cleanup and bug fixes
 	- added a bunch of new potential related to arXiv:1309.3003 plus associated
           parameters
-	- added computation of <x>, <y>, and <z> of the ground, 1st, and 2nd excited 
+	- added computation of <x>, <y>, and <z> of the ground, 1st, and 2nd excited
           states
 	- fix compilation problem on Ubuntu 12.04 [Tx to S. Biondini for the bug report]
 
@@ -155,13 +165,13 @@ Version 2.0 - January 11 2011
 Version 2.0.0b2 - Apr 19 2010
 ----------------------------------------------------------------------------------------
 
-	- Added potential for assessing affect of imaginary part of quarkoninum 
+	- Added potential for assessing affect of imaginary part of quarkoninum
 	  potential
 
 ----------------------------------------------------------------------------------------
 Version 2.0.0b1 - Feb 17 2010
 ----------------------------------------------------------------------------------------
-	
+
 	- Added support for complex potentials, wavefunctions
 
 ----------------------------------------------------------------------------------------
@@ -171,7 +181,7 @@ Version 1.1.0 - Mar 18 2009
 	- Finished implementing dumping of full 3d wavefunctions at end of run
 	- Implemented ability to read previously dumped wavefunctions from disk as
           initial condition for a run.  Wavefunction lattice size can be different
-          than current lattice size; code samples appropriately.  Currently the 
+          than current lattice size; code samples appropriately.  Currently the
 	  number of computational nodes must be the same in order for the read to
 
 	- Fixed some syntax to make the code compile with newer C compilers
@@ -186,13 +196,13 @@ Version 2.0 - January 11 2011
 Version 2.0.0b2 - Apr 19 2010
 ----------------------------------------------------------------------------------------
 
-	- Added potential for assessing affect of imaginary part of quarkoninum 
+	- Added potential for assessing affect of imaginary part of quarkoninum
 	  potential
 
 ----------------------------------------------------------------------------------------
 Version 2.0.0b1 - Feb 17 2010
 ----------------------------------------------------------------------------------------
-	
+
 	- Added support for complex potentials, wavefunctions
 
 ----------------------------------------------------------------------------------------
@@ -202,7 +212,7 @@ Version 1.1.0 - Mar 18 2009
 	- Finished implementing dumping of full 3d wavefunctions at end of run
 	- Implemented ability to read previously dumped wavefunctions from disk as
           initial condition for a run.  Wavefunction lattice size can be different
-          than current lattice size; code samples appropriately.  Currently the 
+          than current lattice size; code samples appropriately.  Currently the
 	  number of computational nodes must be the same in order for the read to
 	  work properly.
 
@@ -246,7 +256,7 @@ Version 1.0.2 - June 24 2008
 ----------------------------------------------------------------------------------------
 Version 1.0.1 - May 9 2008
 ----------------------------------------------------------------------------------------
-	
+
 	- Added coloumb initial conditions
 	- Reorganized solveInitialize so that it's run by comp nodes instead of master
 

@@ -29,7 +29,7 @@ class quantumfdtd:
 
         print(f'Loading config file {name}')
         self.conf = pd.read_csv(name, comment='/', delim_whitespace=True, header=None).set_index(0).T.to_dict('index')[1]
-        self.conf['center_on_lattice'] = self.conf['POTENTIAL'] < 100
+        self.conf['center_on_lattice'] = int(self.conf['POTENTIAL']) < 100
 
         self.load_energies()
 
@@ -105,7 +105,7 @@ class quantumfdtd:
         return self.e_wf.step.unique()
 
     def load_wf(self, snap, state, figure, min_sep_edge=-1., normalization=True):
-        NUM = self.conf['NUM']
+        NUM = int(self.conf['NUM'])
         center_on_lattice = self.conf['center_on_lattice']
 
         if snap < 0:

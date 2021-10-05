@@ -4,7 +4,7 @@ DIR_H          = $(DIR_BUILD)include/
 DIR_OBJ        = $(DIR_BUILD)obj/
 DIR_SRC        = $(DIR_BUILD)src/
 
-DEBUG = 
+DEBUG =
 OPTIMIZATION = -O2 -funroll-loops -finline-functions
 FLOWTRACE =
 CFLAGS = $(DEBUG) $(OPTIMIZATION) $(FLOWTRACE)
