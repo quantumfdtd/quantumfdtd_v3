@@ -19,7 +19,6 @@ double alphasp(double mu);
 double mu(double t, double fac);
 double mup(double t, double fac);
 
-
 double phir(double z);
 double psi1(double z);
 double psi2(double z);
@@ -30,6 +29,6 @@ void destroy_potential(void);
 void initialize_potential_sub(void);
 void destroy_potential_sub(void);
 
-inline bool POTSUBARRAY(void){ return POTENTIAL == 36;}
+inline bool POTSUBARRAY(void) { return POTENTIAL == 36; }
 
 #endif /* __potential_h__ */

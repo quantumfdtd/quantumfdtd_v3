@@ -12,15 +12,14 @@
 #ifndef __latextv_h__
 #define __latextv_h__
 
-
 double distx(int sx);
 double disty(int sy);
 double distz(int sz);
 double distsq(int sx, int sy, int sz);
-double get_pos(const int& sx, const int& sy, const int& sz);
+double get_pos(const int &sx, const int &sy, const int &sz);
 
 bool origin_center_lattice(void);
-void get_pos(const int& sx, const int& sy, const int& sz, double *raw_r2, double* Ar, double* dx, double* dy, double* dz);
+void get_pos(const int &sx, const int &sy, const int &sz, double *raw_r2, double *Ar, double *dx, double *dy, double *dz);
 
 bool center_000(void);
 

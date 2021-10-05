@@ -1,4 +1,4 @@
-// standard deviation of initial wavefunc noise 
+// standard deviation of initial wavefunc noise
 SIG		1.0
 
 // number of spatial grid points; should be divisible by the number of computational nodes
@@ -7,7 +7,7 @@ NUM 		64
 // spatial grid spacing // default unit is 1/GeV
 A		0.301
 
-// temporal grid spacing - should be proportional to A*A, with the proportionality 
+// temporal grid spacing - should be proportional to A*A, with the proportionality
 //                         constant determined empirically
 EPS		.002
 
@@ -57,17 +57,17 @@ KINTERM    0
 POTENTIAL	2
 
 // External potential file (POTENTIAL fro 90 to 99 and 190 to 199)
-// EXTPOT       externalV.txt 
+// EXTPOT       externalV.txt
 
 // set to one to save potential to file
 SAVEPOT         1
 
 // if set, and POTENTIAL=90, the potential is a chi^2 adjustment to V(r)=A+B/r+s*r for
 // (r/A)>POTCRITR
-// POTCRITR 
+// POTCRITR
 
 // if set, and POTENTIAL=90, the potential is flat for (r/A)>POTFLATR.
-// POTFLATR	
+// POTFLATR
 
 //
 // initial condition to use
@@ -76,7 +76,7 @@ SAVEPOT         1
 //        necessary files can be generated at end of a run by turning SAVEWAVEFNCS on
 //    1 	random gaussian with std dev SIG
 //    2		coulomb-like
-//    3		constant of 0.1 in interior 
+//    3		constant of 0.1 in interior
 //    4		boolean test grid; mod(i%2)mod(j%2)mod(k%2)
 //
 INITCONDTYPE	2
