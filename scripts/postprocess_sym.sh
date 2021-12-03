@@ -57,27 +57,27 @@ else
             set +e
 
             gnuplot <<-EOF
-            set term png
-            unset key
-            set xlabel 'r/A'
-            set title '|wf_${i}|^2'
-            set ylabel '|wf_${i}|^2'
-            set output '${NAME}_wf2_${i}_${j}.png'
-            plot '${TMP1}' u $OUT_wf2 w d
-            set ylabel 'Re (wf_${i})'
-            set title 'Re (wf_${i})'
-            set output '${NAME}_re_wf_${i}_${j}.png'
-            plot '${TMP1}' u $OUT_re w d
-            set logscale y
-            set title '|wf_${i}|^2'
-            set ylabel '|wf_${i}|^2'
-            set output '${NAME}_wf2_${i}_${j}_log.png'
-            plot '${TMP1}' u $OUT_wf2 w d
-            set ylabel 'Re (wf_${i})'
-            set title 'Re (wf_${i})'
-            set output '${NAME}_re_wf_${i}_${j}_log.png'
-            plot '${TMP1}' u $OUT_log_re w d
-            EOF
+		set term png
+		unset key
+		set xlabel 'r/A'
+		set title '|wf_${i}|^2'
+		set ylabel '|wf_${i}|^2'
+		set output '${NAME}_wf2_${i}_${j}.png'
+		plot '${TMP1}' u $OUT_wf2 w d
+		set ylabel 'Re (wf_${i})'
+		set title 'Re (wf_${i})'
+		set output '${NAME}_re_wf_${i}_${j}.png'
+		plot '${TMP1}' u $OUT_re w d
+		set logscale y
+		set title '|wf_${i}|^2'
+		set ylabel '|wf_${i}|^2'
+		set output '${NAME}_wf2_${i}_${j}_log.png'
+		plot '${TMP1}' u $OUT_wf2 w d
+		set ylabel 'Re (wf_${i})'
+		set title 'Re (wf_${i})'
+		set output '${NAME}_re_wf_${i}_${j}_log.png'
+		plot '${TMP1}' u $OUT_log_re w d
+		EOF
 
             [[ $? -ne 0 ]] && echo ">>> CASE ${NAME}_${CASE}.dat.gz has failed!!! <<<"
 
