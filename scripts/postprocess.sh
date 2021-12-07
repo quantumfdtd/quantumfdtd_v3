@@ -24,14 +24,14 @@ if [ -z "$1" ]; then
     fi
 
     gnuplot <<-EOF
-    set term png
-    set output 'pot.png'
-    unset key
-    set title 'Potential'
-    set xlabel 'r/A'
-    set ylabel 'V (GeV)'
-    plot 'pot.plot' w d
-    EOF
+	set term png
+	set output 'pot.png'
+	unset key
+	set title 'Potential'
+	set xlabel 'r/A'
+	set ylabel 'V (GeV)'
+	plot 'pot.plot' w d
+	EOF
     rm pot.plot
 
     [[ -f potential_1.dat ]] && tar -zcf potential.tgz --remove-files potential_*.dat
@@ -39,14 +39,14 @@ if [ -z "$1" ]; then
     ############################################################################################################
     echo ">> PROCESSING DECAY TABLE..."
     gnuplot <<-EOF
-    set term png
-    set output 'decay.png'
-    unset key
-    set title 'Evolution of the energies'
-    set xlabel 't (GeV^{-1})'
-    set ylabel 'E (GeV)'
-    plot 'decay.dat' u 2:5 w lp, 'ground_state.out' u 2:5, 'first_excited_state.out' u 2:5, 'second_excited_state.out' u 2:5
-    EOF
+	set term png
+	set output 'decay.png'
+	unset key
+	set title 'Evolution of the energies'
+	set xlabel 't (GeV^{-1})'
+	set ylabel 'E (GeV)'
+	plot 'decay.dat' u 2:5 w lp, 'ground_state.out' u 2:5, 'first_excited_state.out' u 2:5, 'second_excited_state.out' u 2:5
+	EOF
     ############################################################################################################
     "${DIR}/postprocess.sh" wavefunction
     ############################################################################################################
@@ -78,27 +78,27 @@ else
 
         set +e
         gnuplot <<-EOF
-        set term png
-        unset key
-        set xlabel 'r/A'
-        set title '|wf_${i}|^2'
-        set ylabel '|wf_${i}|^2'
-        set output '${NAME}_wf2_${i}.png'
-        plot '${TMP1}' u 1:3 w d
-        set ylabel 'Re (wf_${i})'
-        set title 'Re (wf_${i})'
-        set output '${NAME}_re_wf_${i}.png'
-        plot '${TMP1}' u 1:2 w d
-        set logscale y
-        set title '|wf_${i}|^2'
-        set ylabel '|wf_${i}|^2'
-        set output '${NAME}_wf2_${i}_log.png'
-        plot '${TMP1}' u 1:3 w d
-        set ylabel 'Re (wf_${i})'
-        set title 'Re (wf_${i})'
-        set output '${NAME}_re_wf_${i}_log.png'
-        plot '${TMP1}' u 1:(abs(\$2)) w d
-        EOF
+		set term png
+		unset key
+		set xlabel 'r/A'
+		set title '|wf_${i}|^2'
+		set ylabel '|wf_${i}|^2'
+		set output '${NAME}_wf2_${i}.png'
+		plot '${TMP1}' u 1:3 w d
+		set ylabel 'Re (wf_${i})'
+		set title 'Re (wf_${i})'
+		set output '${NAME}_re_wf_${i}.png'
+		plot '${TMP1}' u 1:2 w d
+		set logscale y
+		set title '|wf_${i}|^2'
+		set ylabel '|wf_${i}|^2'
+		set output '${NAME}_wf2_${i}_log.png'
+		plot '${TMP1}' u 1:3 w d
+		set ylabel 'Re (wf_${i})'
+		set title 'Re (wf_${i})'
+		set output '${NAME}_re_wf_${i}_log.png'
+		plot '${TMP1}' u 1:(abs(\$2)) w d
+		EOF
 
         set -e
 
