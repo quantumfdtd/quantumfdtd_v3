@@ -91,7 +91,7 @@ publication that you cite the following papers:
 
 Rafael L. Delgado, Sebastian Steinbeißer, Michael Strickland, and Johannes H. Weber,  
 "The Relativistic Schrödinger Equation through FFTW3: An Extension of quantumfdtd",  
-To be submitted.  
+Computer Physics Communications 272 (2022), 108250.  
 https://inspirehep.net/literature/1804287
 
 M. Strickland, and D. Yager-Elorriaga,  
