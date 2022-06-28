@@ -34,7 +34,6 @@ dcomp potential(int sx, int sy, int sz)
     double temp, iV, rV;
     double res, err;
     double m12, B, wc, e, rho;
-    int x;
 
     // note that this has no effect on loading of external potentials
     get_pos(sx, sy, sz, &raw_r2, &r, &dx, &dy, &dz);
@@ -48,13 +47,7 @@ dcomp potential(int sx, int sy, int sz)
         break;
     case 1:
         // cubic well
-        if (POTENTIAL > 100)
-        {
-            cerr << "FATAL ERROR: POTENTIAL=3 only admits centering on (1/2,1/2,1/2)!!!" << endl;
-            exit(1);
-        }
-        x = (nodeID - 1) * NUMX + sx;
-        if ((x > NUM / 4 && x <= 3 * NUM / 4) && (sy > NUM / 4 && sy <= 3 * NUM / 4) && (sz > NUM / 4 && sz <= 3 * NUM / 4))
+        if ((dx > -NUM / 4 && dx <= NUM / 4) && (dy > -NUM / 4 && dy <= NUM / 4) && (dz > -NUM / 4 && dz <= NUM / 4))
             return -10.0;
         else
             return 0.0;
