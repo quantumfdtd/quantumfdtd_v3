@@ -47,12 +47,7 @@ dcomp potential(int sx, int sy, int sz)
         break;
     case 1:
         // cubic well
-        if (POTENTIAL > 100)
-        {
-            cerr << "FATAL ERROR: POTENTIAL=3 only admits centering on (1/2,1/2,1/2)!!!" << endl;
-            exit(1);
-        }
-        if ((sx > NUM / 4 && sx <= 3 * NUM / 4) && (sy > NUM / 4 && sy <= 3 * NUM / 4) && (sz > NUM / 4 && sz <= 3 * NUM / 4))
+        if ((dx > -NUM / 4 && dx <= NUM / 4) && (dy > -NUM / 4 && dy <= NUM / 4) && (dz > -NUM / 4 && dz <= NUM / 4))
             return -10.0;
         else
             return 0.0;
